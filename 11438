@@ -1,0 +1,85 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <bits/stdc++.h>
+ 
+using namespace std;
+int N, a, b;
+vector<int> arr[100001];
+int level[100001];
+int parent[100001][18];
+int maxDepth;
+
+int query(int a, int b) {
+    
+    if (a == 1 || b == 1) {
+        return 1;
+    }
+    if (level[a] < level[b]) swap(a, b);
+    
+    if (level[a] != level[b]) {
+        for (int i = maxDepth; i >= 0; i--) {
+            if (level[parent[a][i]] >= level[b]) {
+                a = parent[a][i];
+            }
+        }
+    }
+    
+    int ret = a;
+    
+    if (a != b) {
+        for (int i = maxDepth; i >= 0; i--) {
+            if (parent[a][i] != parent[b][i]) {
+                a = parent[a][i];
+                b = parent[b][i];
+            }
+            ret = parent[a][i];
+        }
+    }
+    return ret;    
+}
+
+void set_tree(int node, int pnode, int lv) {
+    level[node] = lv;
+    parent[node][0] = pnode;
+    
+    for (int i = 1; i <= maxDepth; i++) {
+        parent[node][i] = parent[parent[node][i-1]][i-1];
+    }
+    
+    for (int i = 0; i < arr[node].size(); i++) {
+        if (pnode != arr[node][i]) {
+            set_tree(arr[node][i], node, lv+1);
+        }
+    }
+}
+
+void input() {
+    cin >> N;
+    maxDepth = (int)floor(log2(100001));
+    int cnt = 0;
+    for (int i = 0; i < N-1; i++) {
+        int n1, n2;
+        cin >> n1 >> n2;
+        arr[n1].push_back(n2);
+        arr[n2].push_back(n1);
+    }
+    
+    set_tree(1, 0, 1);
+    
+    int M;
+    cin >> M;
+    for (int i = 0; i < M; i++) {
+        int n1, n2;
+        cin >> n1 >> n2;
+        cout << query(n1, n2) << "\n";
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(NULL);
+    
+    input();
+        
+    return 0;
+}
