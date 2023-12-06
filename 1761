@@ -1,0 +1,91 @@
+#include <bits/stdc++.h>
+using namespace std;
+int N, M;
+vector<int> arr[40001];
+vector<int> weight[40001];
+int parent[40001][17];
+int cost[40001][17];
+int level[40001];
+int maxDepth;
+
+int query(int a, int b) {
+    if (a == b) return 0;
+    
+    if (level[a] < level[b]) swap(a, b);
+    int ans = 0;
+    for (int i = maxDepth; i >= 0; i--) {
+        if (level[parent[a][i]] >= level[b]) {
+            ans += cost[a][i];
+            a = parent[a][i];
+        }
+    }
+    
+    if (a != b) {
+        for (int i = maxDepth; i >= 0; i--) {
+            if (parent[a][i] != parent[b][i]) {
+                ans += cost[a][i] + cost[b][i];
+                a = parent[a][i];
+                b = parent[b][i];
+            }
+        }
+        ans += cost[a][0] + cost[b][0];
+    }
+    return ans;
+}
+
+void solution() {
+    cin >> M;
+    for (int i = 0; i < M; i++) {
+        int a, b;
+        cin >> a >> b;
+        cout << query(a, b) << "\n";
+    }
+}
+
+void set_tree(int node, int pnode, int lv, int w) {
+    parent[node][0] = pnode;
+    cost[node][0] = w;
+    level[node] = lv;
+    
+    for (int i = 1; i <= maxDepth; i++) {
+        parent[node][i] = parent[parent[node][i-1]][i-1];
+        cost[node][i] = cost[node][i-1] + cost[parent[node][i-1]][i-1];
+    }
+    
+    for (int i = 0; i < arr[node].size(); i++) {
+        if (arr[node][i] != pnode) {
+            set_tree(arr[node][i], node, lv+1, weight[node][i]);
+        }
+    }
+}
+
+void input() {
+    cin >> N;    
+    for (int i = 0; i < N-1; i++) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        arr[a].push_back(b);
+        arr[b].push_back(a);
+        weight[a].push_back(c);
+        weight[b].push_back(c);
+    }
+    //cout << "done\n";
+}
+
+void solve() {
+    input();
+    maxDepth = (int)floor(log2(40001));
+    
+    set_tree(1, 0, 1, 0);
+    
+    solution();
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    solve();
+    return 0;
+}
