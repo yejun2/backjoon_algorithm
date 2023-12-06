@@ -1,0 +1,56 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+int N;
+vector<int> arr;
+ll ans;
+
+void solution() {
+    ans = 0;
+    stack<pair<int, int>> stk;
+    for (int i = 0; i < N; i++) {
+        int tmp = arr[i];
+        int cnt = 1;
+        while (!stk.empty() && stk.top().first < tmp) {
+            ans+=stk.top().second;
+            stk.pop();
+        }
+        
+        if (!stk.empty()) {
+            if (stk.top().first == tmp) {
+                cnt = stk.top().second + 1;
+                ans+= stk.top().second;
+                stk.pop();
+                if (!stk.empty()) {
+                    ans++;
+                }
+            }
+            else {
+                ans++;
+            }
+        }
+        //cout << tmp << ", " << ans << endl;
+        stk.push(make_pair(tmp, cnt));
+    }
+}
+
+void input() {
+    cin >> N;
+    for (int i = 0; i < N; i++) {
+        int tmp;
+        cin >> tmp;
+        arr.push_back(tmp);
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    input();
+    solution();
+    cout << ans << endl;
+    return 0;
+}
