@@ -1,0 +1,73 @@
+//
+//  1786_baekjoon.cpp
+//  Backjoon
+//
+//  Created by YejunJung on 2023/12/10.
+//
+
+#include <bits/stdc++.h>
+using namespace std;
+string s, p;
+vector<int> pi;
+
+vector<int> getPI() {
+    int j = 0, m = (int)p.size();
+    vector<int> arr(m, 0);
+    
+    for (int i = 1; i < m; i++) {
+        while (j > 0 && p[i] != p[j]) {
+            j = arr[j-1];
+        }
+        if (p[i] == p[j]) {
+            arr[i] = ++j;
+        }
+    }
+    
+    /*
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    */
+    return arr;
+}
+
+void solution() {
+    int n = (int)s.size(), m = (int)p.size(), j = 0;
+    vector<int> ans;
+    
+    for (int i = 0; i < n; i++) {
+        while (j > 0 && s[i] != p[j]) {
+            j = pi[j-1];
+        }
+        //cout << "i : " << i << ", j : " << j << endl;
+        if (p[j] == s[i]) {
+            if (j == m-1) {
+                ans.push_back(i-m+2);
+                j = pi[j];
+            }
+            else {
+                j++;
+            }
+        }
+    }
+    
+    cout << ans.size() << "\n";
+    for (int i = 0; i < ans.size(); i++) {
+        cout << ans[i] << " ";
+    }
+    cout << "\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    getline(cin, s);
+    getline(cin, p);
+    
+    pi = getPI();
+    solution();
+    return 0;
+}
