@@ -1,0 +1,40 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+int N;
+string s;
+vector<int> arr;
+void input() {
+    cin >> s >> N;
+}
+
+void getPI() {
+    vector<int> vec(s.size(), 0);
+    int j = 0;
+    for (int i = 1; i < s.size(); i++) {
+        while (j > 0 && s[j] != s[i]) {
+            j = vec[j-1];
+        }
+        if (s[j] == s[i]) {
+            vec[i] = ++j;
+        }
+    }
+    
+    arr = vec;
+    
+}
+
+void solution() {
+    getPI();
+    ll ans = 0;
+    ll t = s.size();
+    ans = t + (t - arr[t-1]) * (N-1);
+    cout << ans << endl;
+}
+
+int main() {
+    input();
+    solution();
+    return 0;
+}
