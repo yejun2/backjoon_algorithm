@@ -1,0 +1,46 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> pi;
+string s;
+
+bool input() {
+    cin >> s;
+    return s.compare(".");
+}
+
+vector<int> getPI() {
+    vector<int> arr(s.size(), 0);
+    int j = 0;
+    for (int i = 1; i < s.size(); i++) {
+        while (j>0 && s[i] != s[j]) {
+            j = arr[j-1];
+        }
+        if (s[i] == s[j]) {
+            arr[i] = ++j;
+        }
+    }
+    return arr;
+}
+
+void solution() {
+    while (input()) {
+        pi = getPI();
+        int a = s.size() - pi[pi.size()-1];
+        if (s.size() % a == 0) {
+            cout << s.size() / a << "\n";
+        }
+        else {
+            cout << 1 << "\n";
+        }
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+    solution();
+    return 0;
+}
