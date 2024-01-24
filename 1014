@@ -1,0 +1,50 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int N, M, ans;
+char broken_map[11][11];
+int dp[11][1<<10];
+vector<int> v;
+
+void dfs(int idx, int state) {
+    //cout << "idx : " << idx << ", state : " << state << "\n";
+    if (idx == M) {
+        v.push_back(state);
+        return;
+    }
+    dfs(idx+1, state);
+    if (idx > 0 && (1 << (idx-1)) & state) {}
+    else {
+        dfs(idx+1, state | (1 << idx));
+    }
+}
+
+void input() {
+    cin >> N >> M;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
+            cin >> broken_map[i][j];
+        }
+    }    
+}
+
+void solve() {
+    int C;
+    cin >> C;
+    for (int i = 0; i < C; i++) {
+        ans = 0;
+        v.clear();
+        memset(dp, -1, sizeof(dp));
+        input();
+        dfs(0, 0);
+        for (auto tmp : v){
+            cout << tmp << "\n";
+        }
+        v.clear();
+    }
+}
+
+int main() {
+    solve();
+    return 0;
+}
