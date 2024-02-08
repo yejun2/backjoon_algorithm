@@ -1,0 +1,49 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int N, M, S, E, cost = 0, cnt;
+vector<vector<pair<int, int>>> arr;
+
+void search() {
+    queue<int> q1;
+    queue<int> q2;
+    queue<int> q3;
+    q1.push(S);
+    q2.push(0);
+    q3.push(0);
+    
+    while (!q1.empty()) {
+        int s = q1.front(), c = q2.front(), t = q3.front();
+        if (s == E && t > cost) {
+            cost = t;
+            cnt = c;
+        }
+        q1.pop(); q2.pop(); q3.pop();
+        for (int i = 0; i < arr[s].size(); i++) {
+            q1.push(arr[s][i].first);
+            q2.push(c+1);
+            q3.push(t+arr[s][i].second);
+        }
+    }
+}
+
+void input() {
+    cin >> N >> M;
+    arr = vector<vector<pair<int, int>>>(N+1);
+    for (int i = 0; i < M; i++) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        arr[a].push_back({b, c});
+    }
+    cin >> S >> E;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    input();
+    search();
+    cout << cost << " " << cnt;
+    return 0;
+}
