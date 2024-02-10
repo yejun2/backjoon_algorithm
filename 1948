@@ -1,40 +1,44 @@
 // Online C++ compiler to run C++ program online
 #include <bits/stdc++.h>
 using namespace std;
-int N, M, S, E, cost = 0, cnt = 0;
-vector<vector<pair<int, int>>> arr;
-vector<vector<pair<int, int>>> back;
-vector<int> vec;
-set<pair<int, int>> s;
+int N, M, S, E, cnt = 0;
+vector<pair<int, int>> arr[10009];
+vector<pair<int, int>> back[10009];
+int vec[10009] = {0};
+bool chk[10009] = {false};
 
-void search() {
-    queue<int> q1;
-    queue<int> q2;
-    q1.push(S);
-    q2.push(0);
+void search_route() {
+    queue<int> q;
+    q.push(E);
     
-    while (!q1.empty()) {
-        int s = q1.front(), c = q2.front();
-        vec[s] = max(vec[s], c);
-        q1.pop(); q2.pop();
-        for (int i = 0; i < arr[s].size(); i++) {
-            q1.push(arr[s][i].first);
-            q2.push(c+arr[s][i].second);
-        }
-    }
-    q1.push(E);
-    
-    while (!q1.empty()) {
-        int now = q1.front();
-        q1.pop();
+    while (!q.empty()) {
+        int now = q.front();
+        q.pop();
         for (int i = 0; i < back[now].size(); i++) {
             int to = back[now][i].first, c = back[now][i].second;
             if (vec[to] == vec[now] - c) {
-                q1.push(to);
-                if (s.find({now, to}) == s.end()) {
-                    s.insert({now, to});
+                if (!chk[to]) {
+                    q.push(to);
                 }
-                cnt += 1;
+                cnt++;
+                chk[to] = true;
+            }
+        }
+    }
+}
+
+void search_cost() {
+    queue<int> q;
+    q.push(S);
+    
+    while (!q.empty()) {
+        int now = q.front();
+        q.pop();
+        for (int i = 0; i < arr[now].size(); i++) {
+            int to = arr[now][i].first, cost = arr[now][i].second;
+            if (vec[to] < vec[now] + cost) {
+                vec[to] = vec[now] + cost;
+                q.push(to);
             }
         }
     }
@@ -42,9 +46,6 @@ void search() {
 
 void input() {
     cin >> N >> M;
-    arr = vector<vector<pair<int, int>>>(N+1);
-    back = vector<vector<pair<int, int>>>(N+1);
-    vec = vector<int>(N+1, 0);
     for (int i = 0; i < M; i++) {
         int a, b, c;
         cin >> a >> b >> c;
@@ -54,14 +55,17 @@ void input() {
     cin >> S >> E;
 }
 
+void solution() {
+    input();
+    search_cost();
+    search_route();
+    cout << vec[E] << "\n" << cnt;
+}
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
-    input();
-    search();
-    cost = vec[E];
-    cnt = s.size();
-    cout << cost << "\n" << cnt;
+    solution();
     return 0;
 }
