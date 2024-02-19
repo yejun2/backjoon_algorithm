@@ -1,0 +1,78 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int E, V, C = 0;
+vector<int> arr[10009];
+int chk[10009], done[10009];
+stack<int> s;
+vector<vector<int>> ans;
+
+bool compare(vector<int> a, vector<int> b) {
+    return a[0] < b[0];
+}
+
+int dfs(int node) {
+    chk[node] = ++C;
+    int res = chk[node];
+    s.push(node);
+    
+    for (int i = 0; i < arr[node].size(); i++) {
+        int next = arr[node][i];
+        if (chk[next] == 0) {
+            res = min(res, dfs(next));
+        }
+        else if (!done[next]) {
+            res = min(res, chk[next]);
+        }
+    }
+    
+    if (res == chk[node]) {
+        vector<int> tmp;
+        while (!s.empty()) {
+            int num = s.top();
+            s.pop();
+            tmp.push_back(num);
+            done[num] = 1;
+            if (num == node) break;
+        }
+        sort(tmp.begin(), tmp.end());
+        ans.push_back(tmp);
+    }
+    return res;
+}
+
+void solution() {
+    for (int i = 1; i <= E; i++) {
+        if (chk[i] == 0) {
+            dfs(i);
+        }
+    }
+    sort(ans.begin(), ans.end(), compare);
+    cout << ans.size() << "\n";
+    for (auto& i : ans) {
+        for (int j : i) {
+            cout << j << " ";
+        }
+        cout << "-1\n";
+    }
+}
+
+void input() {
+    cin >> E >> V;
+    for (int i = 0; i < V; i++) {
+        int a, b;
+        cin >> a >> b;
+        arr[a].push_back(b);
+    }
+    fill_n(chk, 10009, 0);
+    fill_n(done, 10009, 0);
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    input();
+    solution();
+    return 0;
+}
