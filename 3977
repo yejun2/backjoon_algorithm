@@ -1,0 +1,79 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+#define endl "\n"
+using namespace std;
+int T, N, M, id;
+vector<int> arr[100009];
+int chk[100009], done[100009];
+vector<int> scc;
+stack<int> s;
+
+int dfs(int node) {
+    chk[node] = ++id;
+    int res = id;
+    s.push(node);
+    
+    for (int i = 0; i < arr[node].size(); i++) {
+        int next = arr[node][i];
+        if (!chk[next]) res = min(res, dfs(next));
+        else if (!done[next]) {
+            res = min(res, chk[next]);
+            done[node] += done[next];
+        }
+    }
+    
+    if (res == chk[node]) {
+        while (!s.empty()) {
+            int num = s.top();
+            s.pop();
+            scc.push_back(num);
+            cout << num << " ";
+            done[num] = 1;
+            if (num == node) {
+                break;
+            }
+        }
+        for (int i = 0; i << scc.size(); i++) {
+            done[scc[i]] += scc.size();
+        }
+    }
+    return res;
+}
+
+void input() {
+    cin >> N >> M;
+    for (int i = 0; i < M; i++) {
+        int a, b;
+        cin >> a >> b;
+        arr[a].push_back(b);
+    }
+}
+
+void solve() {
+    cin >> T;
+    for (; T-- > 0;) {
+        cout << "new section\n";
+        id = 0;
+        input();
+        fill_n(chk, 100009, 0);
+        fill_n(done, 100009, 0);
+        for (int i = 0; i < N; i++) {
+            if (!chk[i]) {
+                dfs(i);
+            }
+        }
+        for (int i = 0; i < N; i++) {
+            cout << done[i] << " ";
+            arr[i].clear();
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    solve();
+    
+    return 0;
+}
