@@ -2,10 +2,9 @@
 #include <bits/stdc++.h>
 #define endl "\n"
 using namespace std;
-int T, N, M, id;
+int T, N, M, id, sid;
 vector<int> arr[100009];
-int chk[100009], done[100009];
-vector<int> scc;
+vector<int> chk, sccId, sccIn;
 stack<int> s;
 
 int dfs(int node) {
@@ -15,26 +14,21 @@ int dfs(int node) {
     
     for (int i = 0; i < arr[node].size(); i++) {
         int next = arr[node][i];
-        if (!chk[next]) res = min(res, dfs(next));
-        else if (!done[next]) {
+        if (chk[next] == 0) res = min(res, dfs(next));
+        else if (sccId[next] == 0) {
             res = min(res, chk[next]);
-            done[node] += done[next];
         }
     }
     
     if (res == chk[node]) {
+        sid++;
         while (!s.empty()) {
-            int num = s.top();
+            int now = s.top();
             s.pop();
-            scc.push_back(num);
-            cout << num << " ";
-            done[num] = 1;
-            if (num == node) {
+            sccId[now] = sid;
+            if (now == node) {
                 break;
             }
-        }
-        for (int i = 0; i << scc.size(); i++) {
-            done[scc[i]] += scc.size();
         }
     }
     return res;
@@ -49,24 +43,57 @@ void input() {
     }
 }
 
+void setting() {
+    id = 0;
+    sid = 0;
+    chk = vector<int>(100009, 0);
+    sccId = vector<int>(100009, 0);
+    sccIn = vector<int>(100009, 0);
+}
+
+void clearSetting() {
+    for (int i = 0; i < 100009; i++) {
+        arr[i].clear();
+    }
+}
+
 void solve() {
     cin >> T;
     for (; T-- > 0;) {
-        cout << "new section\n";
-        id = 0;
+        setting();
         input();
-        fill_n(chk, 100009, 0);
-        fill_n(done, 100009, 0);
+        
         for (int i = 0; i < N; i++) {
             if (!chk[i]) {
                 dfs(i);
             }
         }
+        
         for (int i = 0; i < N; i++) {
-            cout << done[i] << " ";
-            arr[i].clear();
+            for (int j = 0; j < arr[i].size(); j++) {
+                if (sccId[arr[i][j]] != sccId[i]) {
+                    sccIn[sccId[arr[i][j]]]++;
+                }
+            }
+        }
+        int cnt = 0;
+        for (int i = 1; i <= sid; i++) {
+            if (sccIn[i]) {
+                cnt++;
+            }
+        }
+        if (cnt == sid - 1) {
+            for (int i = 0; i < N; i++) {
+                if (sccIn[sccId[i]] == 0) {
+                    cout << i << endl;
+                }
+            }
+        }
+        else {
+            cout << "Confused\n";
         }
         cout << endl;
+        clearSetting();
     }
 }
 
