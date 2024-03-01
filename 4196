@@ -1,0 +1,95 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+#define endl "\n"
+using namespace std;
+int T, N, M, id, sid;
+vector<int> arr[100009];
+vector<int> chk, sccId, sccIn;
+stack<int> s;
+
+int dfs(int node) {
+    chk[node] = ++id;
+    int res = id;
+    s.push(node);
+    
+    for (int i = 0; i < arr[node].size(); i++) {
+        int next = arr[node][i];
+        if (chk[next] == 0) res = min(res, dfs(next));
+        else if (sccId[next] == 0) {
+            res = min(res, chk[next]);
+        }
+    }
+    
+    if (res == chk[node]) {
+        sid++;
+        while (!s.empty()) {
+            int now = s.top();
+            s.pop();
+            sccId[now] = sid;
+            if (now == node) {
+                break;
+            }
+        }
+    }
+    return res;
+}
+
+void input() {
+    cin >> N >> M;
+    for (int i = 0; i < M; i++) {
+        int a, b;
+        cin >> a >> b;
+        arr[a].push_back(b);
+    }
+}
+
+void setting() {
+    id = 0;
+    sid = 0;
+    chk = vector<int>(100009, 0);
+    sccId = vector<int>(100009, 0);
+    sccIn = vector<int>(100009, 0);
+}
+
+void clearSetting() {
+    for (int i = 0; i < 100009; i++) {
+        arr[i].clear();
+    }
+}
+
+void solve() {
+    cin >> T;
+    for (; T-- > 0;) {
+        setting();
+        input();
+        
+        for (int i = 1; i <= N; i++) {
+            if (!chk[i]) {
+                dfs(i);
+            }
+        }
+        for (int i = 1; i <= N; i++) {
+            for (int j = 0; j < arr[i].size(); j++) {
+                if (sccId[arr[i][j]] != sccId[i]) {
+                    sccIn[sccId[arr[i][j]]]++;
+                }
+            }
+        }
+        int cnt = 0;
+        for (int i = 1; i <= sid; i++) {
+            if (!sccIn[i]) {
+                cnt++;
+            }
+        }
+        cout << cnt << endl;
+        clearSetting();
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    solve();
+    
+    return 0;
+}
