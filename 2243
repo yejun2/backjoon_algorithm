@@ -1,0 +1,64 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+#define endl "\n"
+using namespace std;
+int N, ans;
+int MAX = 1000001;
+vector<int> segTree;
+
+void query(int node, int start, int end, int num) {
+    if (start == end) {
+        ans = start;
+        return;
+    }
+    if (start > end) return;
+    int mid = (start + end) / 2;
+    if (segTree[node*2] < num) {
+        query(node*2+1, mid+1, end, num-segTree[node*2]);
+    }
+    else {
+        query(node*2, start, mid, num);
+    }
+}
+
+
+void update(int node, int start, int end, int num, int diff) {
+    if (start > num || num > end) {
+        return;
+    }
+    int mid = (start + end) / 2;
+    segTree[node] += diff;
+    if (start == end) return;
+    update(node*2, start, mid, num, diff);
+    update(node*2+1, mid+1, end, num, diff);
+}
+
+void solve() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    cin >> N;
+    int tree_height = ceil(log2(MAX));
+    int tree_size = 1 << (tree_height + 1);
+    segTree = vector<int>(tree_size+1, 0);
+    
+    for (; N-- > 0;) {
+        int a, b, c;
+        cin >> a;
+        if (a == 1) {
+            cin >> b;
+            query(1, 1, MAX, b);
+            update(1, 1, MAX, ans, -1);
+            cout << ans << endl;
+        }
+        else {
+            cin >> b >> c;
+            update(1, 1, MAX, b, c);
+        }
+    }
+}
+
+int main() {
+    solve();
+    return 0;
+}
