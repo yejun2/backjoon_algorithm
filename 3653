@@ -1,0 +1,67 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+#define endl "\n"
+using namespace std;
+int MAX = 100001;
+int T, N, M;
+vector<int> segTree;
+vector<int> loc;
+
+int sum(int node, int start, int end, int left, int right) {
+    if (left > end || right < start) return 0;
+    if (left <= start && end <= right) {
+        //cout << start << ", " << end << " = " << segTree[node] << endl;
+    
+        return segTree[node];
+    }
+    int mid = (start + end) / 2;
+    return sum(node*2, start, mid, left, right) + sum(node*2+1, mid+1, end, left, right);
+}
+
+void update(int node, int start, int end, int num, int diff) {
+    if (start > num || num > end) return;
+    segTree[node]+=diff;
+    if (start == end) {
+        return;
+    }
+    int mid = (start + end) / 2;
+    update(node*2,start,mid,num,diff);
+    update(node*2+1,mid+1,end,num,diff);
+}
+
+void solve() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    cin >> T;
+    for (;T-- > 0;) {
+        cin >> N >> M;
+        segTree = vector<int>(MAX*9);
+        
+        loc = vector<int>(MAX*3);
+        
+        for (int i = 1; i <= N; i++) {
+            loc[i] = N-i+1; 
+            update(1, 1, MAX*2, loc[i], 1);
+        }
+        
+        for (int i = 0; i < M; i++) {
+            int num;
+            cin >> num;
+            int now = loc[num];
+            loc[num] = N+i+1;
+            //arr[now]=0;
+            //arr[loc[num]] = 1;
+            update(1,1,MAX*2,now,-1);
+            update(1,1,MAX*2,loc[num],1);
+            //cout << now+1 << " ~ " << loc[num]-1 << endl;
+            cout << sum(1,1,MAX*2,now,loc[num]-1) << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    solve();
+    return 0;
+}
