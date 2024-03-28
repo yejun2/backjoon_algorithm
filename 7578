@@ -1,0 +1,68 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+int N;
+int A[500001], B[1000001];
+vector<int> tree;
+ll ans;
+
+void update(int node, int start, int end, int num) {
+    if (start > num || num > end) return;
+    tree[node]++;
+    if (start == end) {
+        return;
+    }
+    int mid = (start + end) / 2;
+    update(node*2, start, mid, num);
+    update(node*2+1, mid+1, end, num);
+}
+
+int search(int node, int start, int end, int left, int right) {
+    if (start > right || end < left) {
+        return 0;
+    }
+    if (start >= left && end <= right) {
+        return tree[node];
+    }
+    int mid = (start+end) / 2;
+    return search(node*2, start, mid, left, right) + search(node*2+1, mid+1, end, left, right);
+}
+
+void input() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    cin >> N;
+    int height = ceil(log2(500001));
+    int tree_size = 1 << (height+1);
+    //cout << tree_size << "\n";
+    tree = vector<int>(tree_size+1, 0);
+    for (int i = 1; i <= N; i++) {
+        cin >> A[i];
+    }
+    for (int i = 1; i <= N; i++) {
+        int num;
+        cin >> num;
+        B[num] = i;
+    }
+}
+
+void solve() {
+    ans = 0;
+    for (int i = 1; i <= N; i++) {
+        int to = B[A[i]];
+        int tmp = search(1, 1, N+1, to, N+1);
+        //cout << to << " : " << tmp << endl;
+        ans += tmp;
+        update(1, 1, N+1, to);
+    }
+    cout << ans << "\n";
+}
+
+int main() {
+    input();
+    solve();
+    return 0;
+}
