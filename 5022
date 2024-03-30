@@ -1,0 +1,65 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int N, M, A1, A2, B1, B2, X1, X2, Y1, Y2;
+int arr[109][109];
+int mx[] = {1, 0, -1, 0};
+int my[] = {0, 1, 0, -1};
+void bfs(int a1, int a2, int b1, int b2) {
+    queue<pair<int, int>> q;
+    q.push({a1, a2});
+    while (!q.empty()) {
+        pair<int, int> p = q.front();
+        int nx = p.first;
+        int ny = p.second;
+        q.pop();
+        if (nx == b1 && ny == b2) break;
+        for (int i = 0; i < 4; i++) {
+            int tx = nx + mx[i];
+            int ty = ny + my[i];
+            if (tx < 0 || tx > N || ty < 0 || ty > M) {
+                continue;
+            }
+            if (arr[tx][ty] == 0 || arr[tx][ty] > arr[nx][ny]) {
+                q.push({tx, ty});
+                arr[tx][ty] = arr[nx][ny] + 1;
+            }
+        }
+    }
+}
+
+void setting(int a1, int a2, int b1, int b2) {
+    for (int i = min(a1, b1); i <= max(a1, b1); i++) {
+        for (int j = min(a2, b2); j <= max(a2, b2); j++) {
+            arr[i][j] = -1;
+        }
+    }
+}
+
+void input() {
+    cin >> N >> M;
+    memset(arr, 109 * 109 * 4, 0);
+    cin >> A1 >> A2 >> B1 >> B2 >> X1 >> X2 >> Y1 >> Y2;
+}
+
+void solve() {
+    int ans1 = -1, ans2 = -1;
+    memset(arr, 109 * 109 * 4, 0);
+    setting(X1, X2, Y1, Y2);
+    bfs(A1, A2, B1, B2);
+    if (arr[Y1][Y2] != 0) {
+        ans1 = abs(X1 - Y1) + abs(X2 - Y2) + arr[B1][B2];
+    }
+    if (ans1 == -1) {
+        cout << "IMPOSSIBLE";
+    }
+    else {
+        cout << ans1;
+    }
+}
+
+int main() {
+    input();
+    solve();
+    return 0;
+}
