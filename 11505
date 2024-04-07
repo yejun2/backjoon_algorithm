@@ -1,0 +1,63 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+ll tree[1000001 * 4];
+int arr[1000009];
+int N, M, K;
+
+ll query(int node, int start, int end, int left, int right) {
+    if (start > right || end < left) {
+        return 1;
+    }
+    if (left <= start && end <= right) {
+        return tree[node];
+    }
+    int mid = (start + end) / 2;
+    return query(node*2, start, mid, left, right)
+    * query(node*2+1, mid+1, end, left, right);
+}
+
+void update(int node, int start, int end, int target, ll num, int chk) {
+    if (start > target || end < target) return;
+    cout << start << " , " << end << " : " << tree[node] << "\n";
+    
+    if (chk) {
+        tree[node] *= num;
+    }
+    else {
+        tree[node] /= num;
+    }
+    if (start == end) return;
+    int mid = (start + end) / 2;
+    update(node*2, start, mid, target, num, chk);
+    update(node*2+1, mid+1, end, target, num, chk);
+}
+
+void input() {
+    cin >> N >> M >> K;
+    fill_n(tree, 4000004, 1);
+    for (int i = 1; i <= N; i++) {
+        ll tmp;
+        cin >> tmp;
+        arr[i] = tmp;
+        update(1, 1, 4000004, i, tmp, 1);
+    }
+    for (int i = 0; i < M+K; i++) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        if (a == 1) {
+            update(1, 1, 4000004, b, arr[b], 0);
+            arr[b] = c;
+            update(1, 1, 4000004, b, arr[b], 1);
+        }
+        else {
+            cout << query(1, 1, 4000004, b, c) << "\n";
+        }
+    }
+} 
+
+int main() {
+    input();        
+    return 0;
+}
