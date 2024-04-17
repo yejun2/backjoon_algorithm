@@ -1,0 +1,46 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+#define endl "\n"
+vector<int> nums;
+int parents[4000001];
+int N, M, K, tmp;
+
+int find_parents(int idx) {
+    if (parents[idx] == idx) return idx;
+    return parents[idx] = find_parents(parents[idx]);
+}
+
+int find (int num) {
+    int idx = lower_bound(nums.begin(), nums.end(), num+1) - nums.begin();
+    int ret = find_parents(idx);
+    if (ret < M) parents[idx] = find_parents(ret+1);
+    return nums[ret];
+}
+
+void input() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    cin >> N >> M >> K;
+    for (int i = 0; i < M; i++) {
+        cin >> tmp;
+        nums.push_back(tmp);
+    }    
+    sort(nums.begin(), nums.end());
+    
+    for (int i = 0; i < M; i++) {
+        parents[i] = i;
+    }
+    
+    for (int i = 0; i < K; i++) {
+        cin >> tmp;
+        cout << find(tmp) << endl;
+    }
+}
+
+int main() {
+    input();
+    return 0;
+}
