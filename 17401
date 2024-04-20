@@ -1,0 +1,60 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int T, N, D, M;
+int arr[101][21][21];
+int ans[102][21][21];
+
+void solve() {
+    for (int i = 1; i <= N; i++) {
+        ans[0][i][i] = 1;
+    }
+    for (int h = 0; h < D; h++) {
+        cout << h << " : " << T << endl;
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= N; j++) {
+                for (int k = 1; k <= N; k++) {
+                    ans[h+1][i][k] += arr[h % T][j][k] * ans[h][i][j];
+                }
+            }
+        }
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= N; j++) {
+                cout << ans[h+1][i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << endl;
+        
+    }
+}
+
+void input() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    cin >> T >> N >> D;
+    for (int i = 0; i < T; i++) {
+        cin >> M;
+        for (int j = 0; j < M; j++) {
+            int a, b, c;
+            cin >> a >> b >> c;
+            arr[i][a][b] = c;
+            //cout << a << b << c << endl;
+        }
+    }
+    for (int h = 0; h < T; h++) {
+        for (int i = 1; i <=N; i++) {
+            for (int j = 1; j <= N; j++) {
+                cout << arr[h][i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << "-------------\n";
+    }
+}
+
+int main() {
+    input();
+    solve();
+    return 0;
+}
