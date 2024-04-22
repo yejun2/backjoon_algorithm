@@ -1,55 +1,81 @@
 // Online C++ compiler to run C++ program online
 #include <bits/stdc++.h>
 using namespace std;
-int T, N, D, M;
-int arr[101][21][21];
-int ans[102][21][21];
-
-void solve() {
-    for (int i = 1; i <= N; i++) {
-        ans[0][i][i] = 1;
-    }
-    for (int h = 0; h < D; h++) {
-        cout << h << " : " << T << endl;
+#define ll long long
+#define endl "\n"
+#define MOD 1000000007
+int T, N, D, M, a, b, c;
+class Matrix{
+public :
+    vector<vector<ll>> vec;
+    
+    Matrix() { vec = vector<vector<ll>>(N+1, vector<ll>(N+1, 0));}
+    
+    Matrix operator*(const Matrix& m) {
+        Matrix result = Matrix();
         for (int i = 1; i <= N; i++) {
             for (int j = 1; j <= N; j++) {
                 for (int k = 1; k <= N; k++) {
-                    ans[h+1][i][k] += arr[h % T][j][k] * ans[h][i][j];
+                    result.vec[i][j] += this->vec[i][k] * m.vec[k][j] % MOD;
                 }
+                result.vec[i][j] %= MOD;
             }
         }
-        for (int i = 1; i <= N; i++) {
-            for (int j = 1; j <= N; j++) {
-                cout << ans[h+1][i][j] << " ";
-            }
-            cout << endl;
+        return result;
+    }
+};
+
+Matrix m[101];
+
+Matrix power(Matrix target, int num) {
+    if (!num) {
+        Matrix e = Matrix();
+        for (int i = 1; i <= N; i++) e.vec[i][i] = 1;
+        return e;
+    }
+    Matrix tmp = power(target, num / 2);
+    tmp = tmp * tmp;
+    if (num % 2) {
+        tmp = tmp * target;
+    }
+    return tmp;
+}
+
+void solve() {
+    Matrix mat = Matrix();
+    for (int i = 1; i <= N; i++) {
+        mat.vec[i][i] = 1;
+    }
+    // (AB........Z) 제곱
+    if (D / T) {
+        for (int i = 0; i < T; i++) {
+            mat = mat * m[i];
+        }
+        mat = power(mat, D / T);
+        
+    }
+    // 나머지 곱해서 답출력
+    for (int i = 0; i < D % T; i++) {
+        mat = mat * m[i];
+    }
+    for (int j = 1; j <= N; j++) {
+        for (int k = 1; k <= N; k++) {
+            cout << mat.vec[j][k] << " ";
         }
         cout << endl;
-        
     }
 }
 
 void input() {
-    ios::sync_with_stdio(false);
-    cin.tie(NULL); cout.tie(NULL);
+    ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
     cin >> T >> N >> D;
-    for (int i = 0; i < T; i++) {
+    for(int i = 0; i < T; i++) {
         cin >> M;
+        m[i] = Matrix();
         for (int j = 0; j < M; j++) {
-            int a, b, c;
             cin >> a >> b >> c;
-            arr[i][a][b] = c;
-            //cout << a << b << c << endl;
+            m[i].vec[a][b] += c;
         }
-    }
-    for (int h = 0; h < T; h++) {
-        for (int i = 1; i <=N; i++) {
-            for (int j = 1; j <= N; j++) {
-                cout << arr[h][i][j] << " ";
-            }
-            cout << endl;
-        }
-        cout << "-------------\n";
     }
 }
 
