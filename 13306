@@ -1,0 +1,75 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+#define endl "\n"
+#define MAX 200005
+#define FASTIO ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+int N, Q;
+int parent[MAX], arr[MAX];
+stack<int> type, cut;
+stack<pair<int, int>> question;
+
+int find_parent(int x) {
+    if (parent[x] == x) return x;
+    return parent[x] = find_parent(parent[x]);
+}
+
+void union_find(int a, int b) {
+    int A = find_parent(a), B = find_parent(b);
+    if (A < B) {
+        parent[B] = A;
+    }
+    else {
+        parent[A] = B;
+    }
+}
+
+void solve() {
+    for (int i = 1; i <= N; i++) {
+        parent[i] = i;
+    }
+    stack<string> s;
+    while (!type.empty()) {
+        int a = type.top(); type.pop();
+        if (a) {
+            pair<int, int> p = question.top(); question.pop();
+            if (find_parent(p.first) == find_parent(p.second)) s.push("YES\n");
+            else s.push("NO\n");
+        }
+        else {
+            int b = cut.top(); cut.pop();
+            union_find(b, arr[b]);
+        }
+    }
+    while (!s.empty()) {
+        cout << s.top();
+        s.pop();
+    }
+}
+
+void input() {
+    FASTIO
+    cin >> N >> Q;
+    arr[1] = 1;
+    int a,b,c;
+    for (int i = 1; i < N; i++) {
+        cin >> arr[i+1];
+    }
+    for (int i = 1; i < N+Q; i++) {
+        cin >> a >> b;
+        type.push(a);
+        if (a) {
+            cin >> c;
+            question.push(make_pair(b, c));
+        }
+        else {
+            cut.push(b);
+        }
+    }
+}
+
+int main() {
+    input();
+    solve();
+    return 0;
+}
