@@ -1,0 +1,78 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define FASTIO ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+#define MAX 100001
+int N, M, Q;
+int parent[MAX], chk[MAX];
+ll cnt[MAX];
+vector<pair<int, int>> vec;
+stack<int> s;
+
+int find_parent(int x) {
+    if (parent[x] == x) return x;
+    return parent[x] = find_parent(parent[x]);
+}
+
+void union_find(int x, int y) {
+    int X = find_parent(x), Y = find_parent(y);
+    if (X < Y) {
+        parent[Y] = X;
+        cnt[X] += cnt[Y];
+        cnt[Y] = 0;
+    }
+    else {
+        parent[X] = Y;
+        cnt[Y] += cnt[X];
+        cnt[X] = 0;
+    }
+}
+
+void solve() {
+    for (int i = 0; i < M; i++) {
+        if (!chk[i]) {
+            pair<int, int> p = vec[i];
+            if (find_parent(p.first) != find_parent(p.second)) {
+                union_find(p.first, p.second);
+            }
+        }
+    }
+    ll ans = 0;
+    while (!s.empty()) {
+        int idx = s.top();
+        s.pop();
+        pair<int,int> p = vec[idx];
+        int x = find_parent(p.first), y = find_parent(p.second);
+        if (x != y) {
+            ans += cnt[x] * cnt[y];
+            union_find(x, y);
+        }
+    }
+    cout << ans << endl;
+}
+
+void input() {
+    for (int i = 0; i < MAX; i++) {
+        parent[i] = i;
+        cnt[i] = 1;
+    }
+    cin >> N >> M >> Q;
+    int a, b;
+    for (int i = 0; i < M; i++) {
+        cin >> a >> b;
+        vec.push_back(make_pair(a, b));
+    }
+    for (int i = 0; i < Q; i++) {
+        cin >> a;
+        s.push(a-1);
+        chk[a-1] = 1;
+    }
+}
+
+int main() {
+    FASTIO
+    input();
+    solve();
+    return 0;
+}
