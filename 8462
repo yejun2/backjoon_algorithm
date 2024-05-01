@@ -1,0 +1,86 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define endl "\n"
+ll arr[100001], ans[100001];
+int cnt[1000001];
+int N, T, sqrtN, a, b;
+#define FASTIO ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+class Query {
+public:
+    int s, e, idx;
+    Query(int s, int e, int idx) {
+        this->s = s;
+        this->e = e;
+        this->idx = idx;
+    }
+    bool operator < (Query &q) {
+        if (s/sqrtN == q.s/sqrtN) {
+            return e < q.e;
+        }
+        return s/sqrtN < q.s/sqrtN;
+    }
+};
+vector<Query> vec;
+
+void solve() {
+    sort(vec.begin(), vec.end());
+    ll now = 0;
+    int left = vec[0].s, right = vec[0].e;
+    for (int i = left; i <= right; i++) {
+        now -= arr[i] * cnt[arr[i]] * cnt[arr[i]];
+        cnt[arr[i]]++;
+        now += arr[i] * cnt[arr[i]] * cnt[arr[i]];
+    }
+    ans[vec[0].idx] = now;
+    for (int i = 1; i < T; i++) {
+        a = vec[i].s; b = vec[i].e;
+        for (int j = left; j < a; j++) {
+            now -= arr[j] * cnt[arr[j]] * cnt[arr[j]];
+            cnt[arr[j]]--;
+            now += arr[j] * cnt[arr[j]] * cnt[arr[j]];
+        }
+        for (int j = a; j < left; j++) {
+            now -= arr[j] * cnt[arr[j]] * cnt[arr[j]];
+            cnt[arr[j]]++;
+            now += arr[j] * cnt[arr[j]] * cnt[arr[j]];
+        }
+        for (int j = b; j > right; j--) {
+            now -= arr[j] * cnt[arr[j]] * cnt[arr[j]];
+            cnt[arr[j]]++;
+            now += arr[j] * cnt[arr[j]] * cnt[arr[j]];
+        }
+        for (int j = right; j > b; j--) {
+            now -= arr[j] * cnt[arr[j]] * cnt[arr[j]];
+            cnt[arr[j]]--;
+            now += arr[j] * cnt[arr[j]] * cnt[arr[j]];
+        }
+        left = a; right = b;
+        ans[vec[i].idx] = now;
+    }
+    for (int i = 0; i < T; i++) {
+        cout << ans[i] << endl;
+    }
+}
+
+void input() {
+    FASTIO
+    cin >> N >> T;
+    sqrtN = sqrt(N);
+    
+    for (int i = 0; i < N; i++) {
+        cin >> arr[i];
+    }
+    for (int i = 0; i < T; i++) {
+        cin >> a >> b;
+        Query q = Query(a-1, b-1, i);
+        vec.push_back(q);
+    }
+}
+
+int main() {
+    input();
+    solve();
+    return 0;
+}
