@@ -1,0 +1,64 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+#define FASTIO ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+
+vector<int> arr[10001];
+int V, E, a, b, time_arr[10001], cnt = 0, chk[10001], ans;
+
+void input() {
+    cin >> V >> E;
+    for (int i = 0; i < E; i++) {
+        cin >> a >> b;
+        arr[a].push_back(b);
+        arr[b].push_back(a);
+    }
+}
+
+int dfs(int node, bool root) {
+    time_arr[node] = ++cnt;
+    int now = time_arr[node], child = 0;
+    
+    for (int i = 0; i < arr[node].size(); i++) {
+        int next = arr[node][i];
+        if (time_arr[next]) {
+            now = min(now, time_arr[next]);
+        }
+        else {
+            child++;
+            int tmp = dfs(next, false);
+            if (!root && tmp >= time_arr[node]) {
+                chk[node] = 1;
+            }
+            now = min(now, tmp);
+        }
+    }
+    
+    if (root & child>1) {
+        chk[node] = 1;
+    }
+    //cout << node << " " << now << endl;
+    return now;
+}
+
+void solve() {
+    for (int i = 1; i <= V; i++) {
+        if (!time_arr[i]) {
+            dfs(i, true);
+        }
+    }
+    
+    for (int i = 1; i <= V; i++) {
+        if (chk[i]) ans++;
+    }
+    cout << ans << "\n";
+    for (int i = 1; i <= V; i++) {
+        if (chk[i]) cout << i << " ";
+    }
+}
+
+int main() {
+    input();
+    solve();
+    return 0;
+}
