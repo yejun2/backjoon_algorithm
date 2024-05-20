@@ -1,0 +1,57 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int V, E, a, b, now;
+vector<int> arr[100001];
+int cnt[100001];
+vector<pair<int,int>> ans;
+
+int dfs(int node, int parent) {
+    cnt[node] = ++now;
+    int n = cnt[node];
+    
+    for (int i = 0; i < arr[node].size(); i++) {
+        int next = arr[node][i];
+        if (parent == next) continue;
+        if (cnt[next]) {
+            n = min(cnt[next], n);
+        }
+        else {
+            int nt = dfs(next, node);
+            if (nt > cnt[node]) {
+                ans.push_back(make_pair(min(next, node), max(next, node)));
+            }
+            n = min(nt, n);
+        }
+    }
+    
+    return n;
+}
+
+void input() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    cin >> V >> E;
+    for (int i = 0; i < E; i++) {
+        cin >> a >> b;
+        arr[a].push_back(b);
+        arr[b].push_back(a);
+    }
+}
+
+int main() {
+    input();
+    for (int i = 1; i <= V; i++) {
+        if (!cnt[i]) {
+            dfs(i, 0);
+        }
+    }
+    sort(ans.begin(), ans.end());
+    cout << ans.size() << "\n";
+    for (auto v : ans) {
+        cout << v.first << " " << v.second << "\n";
+    }
+    return 0;
+}
