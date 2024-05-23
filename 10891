@@ -1,0 +1,69 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int N, M, cnt;
+vector<int> arr[100001];
+int chk[100001];
+int cycle[100001];
+
+int dfs(int node, int parent) {
+    chk[node] = ++cnt;
+    int now = chk[node];
+    
+    for (int i = 0; i < arr[node].size(); i++) {
+        int next = arr[node][i];
+        if (next == parent) continue;
+        if (!chk[next]) {
+            int nt = dfs(next, node);
+            if (nt <= chk[node]) {
+                cycle[node]++;
+            }
+            now = min(nt, now);
+        }
+        else {
+            if (chk[next] <= chk[node]) {
+                cycle[node]++;
+            }
+            now = min(chk[next], now);
+        }
+    }
+    return now;
+}
+
+void input() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    cin >> N >> M;
+    int a, b;
+    for (int i = 0; i < M; i++) {
+        cin >> a >> b;
+        arr[a].push_back(b);
+        arr[b].push_back(a);
+    }    
+}
+
+void solve() {
+    for (int i = 1; i <= N; i++) {
+        if (!chk[i]) {
+            dfs(i, 0);
+        }
+    }
+    bool ans = true;
+    
+    for (int i = 1; i <= N; i++) {
+        if (cycle[i] > 1) {
+            ans = false;
+            break;
+        }
+    }
+    if (ans) cout << "Cactus\n";
+    else cout << "Not cactus\n";
+}
+
+int main() {
+    input();
+    solve();
+    return 0;
+}
