@@ -1,0 +1,153 @@
+1.
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int N, ans;
+vector<string> vec;
+struct Node {
+    char c;
+    int num = 0;
+    vector<Node*> child;
+};
+
+
+void input() {
+    
+    string str;
+    for (int i = 0; i < N; i++) {
+        cin >> str;
+        vec.push_back(str);        
+    }
+}
+
+void setting(int idx, string str, Node* node) {
+    //cout << str << " -> " << idx << "\n";
+    node->num++;
+    if (idx >= str.size()) return;
+    char target = str[idx];
+    vector<Node*> arr = node->child;
+    //cout << "done\n";
+    bool check = false;
+    for (int i = 0; i < arr.size(); i++) {
+        Node* tmp = arr[i];
+        if (tmp->c == target) {
+            setting(idx+1, str, arr[i]);
+            check = true;
+            break;
+        }
+    }
+    if (!check) {
+        Node* new_node = new Node();
+        new_node->c = target;
+        node->child.push_back(new_node);
+        setting(idx+1, str, new_node);
+    }
+    return;
+}
+
+void search(int idx, string str, Node* node, int cnt) {
+    if (idx >= str.size()) return;
+    char target = str[idx];
+    vector<Node*> arr = node->child;
+    for (int i = 0; i < arr.size(); i++) {
+        Node* tmp = arr[i];
+        if (tmp->c == target) {
+            if (cnt > tmp->num) {
+                //cout 
+                ans ++;
+            }
+            search(idx+1, str, arr[i], tmp->num);
+            break;
+        }
+    }
+}
+
+void solution() {
+    ans = 0;
+    Node* start = new Node();
+    for (int i = 0; i < N; i++) {
+        string str = vec[i];
+        setting(0, str, start);
+    }
+    
+    for (int i = 0; i < N; i++) {
+        string str = vec[i];
+        search(0, str, start, N+1);
+    }
+    //cout << "done\n";
+    double result = (double)ans / N;
+    cout << fixed << setprecision(2) << result << '\n';
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    while (cin >> N) {
+        input();
+        solution();
+        vec.clear();
+    }
+    return 0;
+}
+
+
+2.
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int N;
+
+class Node{
+public:
+int cnt=0;
+unordered_map<char, Node*> umap;
+
+void insert(string str) {
+    Node* now = this;
+    for (auto a : str) {
+        if (now->umap[a] == nullptr) {
+            Node* node = new Node();
+            now->umap[a] = node;
+        }
+        now = now->umap[a];
+        now->cnt++;
+    }
+}
+
+int search(string str) {
+    Node* now = this;
+    int num = N+1, sum = 0;
+    for (auto a : str) {
+        now = now->umap[a];
+        if (num > now->cnt) {
+            sum++; num = now->cnt;
+        }
+        if (num == 1) break;
+    }
+    return sum;
+}
+
+};
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    while (cin >> N) {
+        vector<string> vec;
+        string tmp;
+        Node* start = new Node();
+        for (int i = 0; i < N; i++) {
+            cin >> tmp;
+            vec.push_back(tmp);
+            start->insert(tmp);
+        }
+        int total = 0;
+        for (string s : vec) {
+            total += start->search(s);
+        }
+        
+        cout << fixed << setprecision(2) 
+        << (double)total / N << "\n";
+    }
+    return 0;
+}
