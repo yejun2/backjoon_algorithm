@@ -1,0 +1,81 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+set<string> names;
+int C, N, Q;
+class Node {
+private:
+    char x;
+    bool isEnd;
+    unordered_map<char, Node*> child;
+public:
+    void insert(string str) {
+        Node* now = this;
+        for (int i = 0; i < str.length(); i++) {
+            char tar = str[i];
+            if (now->child[tar] == nullptr) {
+                Node* newNode = new Node();
+                newNode->x = tar;
+                now->child[tar] = newNode;
+            }
+            now = now->child[tar];
+            if (i == str.length()-1) {
+                now->isEnd = true;
+            } 
+        }
+    }
+    
+    bool search(string str) {
+        Node* now = this;
+        for (int i = 0; i < str.length(); i++) {
+            char tar = str[i];
+            //cout << i << "->";
+            if (now->child[tar] == nullptr) return false;
+            now = now->child[tar];
+            if (now->isEnd) {
+                //cout << str << " => " << tar << endl;
+                auto itr = names.find(str.substr(i+1));
+                if (itr != names.end()) {
+                    return true;
+                }
+            }
+        }
+        // 문자열이 색상보다 더 짧은 경우
+        return false;
+    }
+};
+
+void input() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    
+    cin >> C >> N;
+    
+    string tmp;
+    Node* start = new Node();
+    
+    while (C-- > 0) {
+        cin >> tmp;
+        start->insert(tmp);    
+    }
+    
+    while (N-- > 0) {
+        cin >> tmp;
+        names.insert(tmp);
+    }
+    cin >> Q;
+    while (Q-- > 0) {
+        cin >> tmp;
+        if (start->search(tmp)) {
+            cout << "Yes\n";
+        }
+        else {
+            cout << "No\n";
+        }
+    }
+}
+
+int main() {
+    input();
+    return 0;
+}
