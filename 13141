@@ -1,75 +1,67 @@
 // Online C++ compiler to run C++ program online
 #include <bits/stdc++.h>
+#define INF 987654321
 using namespace std;
 int N, M;
-
-double low[201][201], high[201][201], arr[201][201];
-
-void show(double* a) {
-    cout<<fixed;
-    cout.precision(1);
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            cout << *(a + i * 201 + j) << " ";
-        }
-        cout << endl;
-    }
-}
+vector<vector<int>> low, high;
 
 void input() {
     ios::sync_with_stdio(false);
     cin.tie(NULL); cout.tie(NULL);
     
     cin >> N >> M;
-    int a, b;
-    double c;
+    
+    int a, b, c;
+    low = vector<vector<int>>(N, vector<int>(N, INF));
+    high = vector<vector<int>>(N, vector<int>(N, 0));
     for (int i = 0; i < M; i++) {
         cin >> a >> b >> c;
         a--; b--;
-        if (low[a][b] == 0) {
-            low[a][b] = c;
-            low[b][a] = c;
-        }
-        else {
-            low[a][b] = min(low[a][b], c);
-            low[b][a] = min(low[b][a], c);
-        }
+        low[a][b] = min(low[a][b], c);
+        low[b][a] = min(low[b][a], c);
+        
         high[a][b] = max(high[a][b], c);
         high[b][a] = max(high[b][a], c);
     }
+    
     for (int i = 0; i < N; i++) {
         low[i][i] = 0;
     }
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            high[i][j] = (high[i][j] - low[i][j]) / 2 + low[i][j];
-        }
-    }
 }
-
-void floyd_warshall() {
+ 
+void floyd() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             for (int k = 0; k < N; k++) {
-                if (low[i][j] == 0 && i != j) continue;
-                if (low[j][k] == 0 && j != k) continue;
-                if (arr[i][k] == 0) arr[i][k] = 987654321;
-                arr[i][k] = min(arr[i][k], max({high[i][i], low[i][j] + low[j][k],
-                    high[j][j], low[i][j] + high[j][k], low[i][j] + low[j][k] + high[k][k]})
-                );
+                low[j][k] = min(low[j][k], low[j][i] + low[i][k]);
             }
         }
     }
 }
 
+void solution() {
+    double ans = INF;
+    for (int i = 0; i < N; i++) {
+        double maxdist = 0;
+        for (int j = 0; j < N; j++) {
+            for (int k = 0; k < N; k++) {
+                maxdist = max(maxdist, double(low[i][k]));
+                double remain = high[j][k] - (low[i][k] - low[i][j]);
+                if (remain > 0) {
+                    double tmp = remain / 2;
+                    tmp += low[i][k];
+                    maxdist = max(maxdist, tmp);
+                }
+            }
+        }
+        ans = min(ans, maxdist);
+    }
+    printf("%.1f\n", ans);
+}
+
 int main() {
     input();
-    show(*low);
-    cout << "low\n";
-    show(*high);
-    cout << "high\n";
-    floyd_warshall();
-    show(*arr);
-    cout << "arr\n";
+    floyd();
+    solution();
     return 0;
 }
