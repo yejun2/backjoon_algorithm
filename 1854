@@ -1,0 +1,58 @@
+// Online C++ compiler to run C++ program online
+#include <bits/stdc++.h>
+using namespace std;
+int N, M, K;
+vector<pair<int, int>> vec[1001];
+priority_queue<int> arr[1001];
+
+void input() {
+    ios::sync_with_stdio(false);
+    cin.tie(NULL); cout.tie(NULL);
+    
+    cin >> N >> M >> K;
+    int a, b, c;
+    
+    for (int i = 0; i < M; i++) {
+        cin >> a >> b >> c;
+        vec[a].push_back({b, c});
+    }
+}
+
+void dijkstra() {
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int,int>>> pq;
+    pq.push({0, 1});
+    arr[1].push(0);
+    while (!pq.empty()) {
+        pair<int, int> p = pq.top();
+        pq.pop();
+        int node = p.second, cost = p.first;
+        
+        for(auto& a : vec[node]) {
+            int next = a.first, next_cost = cost + a.second;
+            
+            if (arr[next].size() < K) {
+                pq.push({next_cost, next});
+                arr[next].push(next_cost);
+            }
+            else if (arr[next].top() > next_cost) {
+                pq.push({next_cost, next});
+                arr[next].pop();
+                arr[next].push(next_cost);
+            }
+        }
+    }
+}
+
+void solution() {
+    for (int i = 1; i <= N; i++) {
+        if (arr[i].size() < K) cout << "-1\n";
+        else cout << arr[i].top() << "\n";
+    }
+}
+
+int main() {
+    input();
+    dijkstra();
+    solution();
+    return 0;
+}
